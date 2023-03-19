@@ -277,6 +277,9 @@ function drawGame() {
       } else if (isTouchInArea(touchEnd, 110, 170, 100, 30)) {
         gameState = "vsCPU";
       }
+      else if (isTouchInArea(touchEnd, 110, 210, 100, 30)) {
+        gameState = "singlePlayer"; // HUMAN EDIT
+      }
     } else {
       const direction = getTouchDirection(touchStart, touchEnd);
       if (direction === "up" && snake1.vy === 0) snake1.changeDirection(0, -scale);
