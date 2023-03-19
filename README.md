@@ -1,7 +1,7 @@
 # snake_gpt4
 Clone of the videogame "Snake" built using HTML5 Canvas and JavaScript - all by leveraging GPT-4. It's a simple experiment to evaluate the performance of GPT-4 by reducing the human code to 0.
 
-The only human contribution was limited to Prompt Engineering, Testing and Feedback to the model
+The only human contribution was limited to Prompt Engineering, Testing and Feedback to the model, as well as adding the Single Player mode (at the very end), as it was done at a later stage and I was hitting the token limitation.
 
 # the game
 The game is a simple clone of the videogame Snake, but with a multiplayer nature, it supports playing against the CPU or against a second player (which would move using the WASD keys).
@@ -10,7 +10,7 @@ The game is a simple clone of the videogame Snake, but with a multiplayer nature
 The game also supports touch controls (for player 1) using swipes up, left, down or right
 
 # the objective
-The game ends when one of the two players reaches 250 points, when the snakes' heads collide or when the snake head collides with any part of its own body.
+The game ends when one of the two players reaches 250 points, when the snakes' heads collide or when the snake head collides with any part of its own body. In Single Player, the game is endless unless the snake head collides with itself
 
-# power up
+# power up (multiplayer/vs CPU only)
 a power up is spawned in between 5 and 15 seconds of game, the power up simply makes the opponent snake 0.75 slower.
