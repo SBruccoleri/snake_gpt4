@@ -227,10 +227,9 @@ function drawGame() {
     touchStart.y = e.touches[0].clientY;
   });
   
-  canvas.addEventListener("touchmove", (e) => {
-
-      e.preventDefault();
-  const touchEnd = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+ canvas.addEventListener("touchend", (e) => {
+  e.preventDefault();
+  const touchEnd = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
 
   if (gameState === "title") {
     if (isTouchInArea(touchEnd, 110, 140, 100, 30)) {
@@ -242,15 +241,12 @@ function drawGame() {
     }
   } else {
     const direction = getTouchDirection(touchStart, touchEnd);
-  
-    if (gameState === "multiplayer" || gameState === "vsCPU") {
-      if (direction === "up" && snake1.vy === 0) snake1.changeDirection(0, -scale);
-      if (direction === "down" && snake1.vy === 0) snake1.changeDirection(0, scale);
-      if (direction === "left" && snake1.vx === 0) snake1.changeDirection(-scale, 0);
-      if (direction === "right" && snake1.vx === 0) snake1.changeDirection(scale, 0);
-    }  }
-    
-  });
+    if (direction === "up" && snake1.vy === 0) snake1.changeDirection(0, -scale);
+    if (direction === "down" && snake1.vy === 0) snake1.changeDirection(0, scale);
+    if (direction === "left" && snake1.vx === 0) snake1.changeDirection(-scale, 0);
+    if (direction === "right" && snake1.vx === 0) snake1.changeDirection(scale, 0);
+  }
+});
 function gameLoop() {
   if (!gameOver) {
     updateGame();
