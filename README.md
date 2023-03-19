@@ -1,5 +1,7 @@
 # snake_gpt4
-Clone of the videogame "Snake" built using HTML5 Canvas and JavaScript - all by leveraging GPT-4.
+Clone of the videogame "Snake" built using HTML5 Canvas and JavaScript - all by leveraging GPT-4. It's a simple experiment to evaluate the performance of GPT-4 by reducing the human code to 0.
+
+The only human contribution was limited to Prompt Engineering, Testing and Feedback to the model
 
 # the game
 The game is a simple clone of the videogame Snake, but with a multiplayer nature, it supports playing against the CPU or against a second player (which would move using the WASD keys).
