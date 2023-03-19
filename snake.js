@@ -98,7 +98,10 @@ function drawScore() {
     ctx.fillStyle = "white";
     ctx.font = "16px Arial";
     ctx.fillText("Player 1 Score: " + snake1.score, 10, 20);
-    ctx.fillText("Player 2 Score: " + snake2.score, canvasSize - 150, 20);
+    if(gameState != "singlePlayer"){
+        ctx.fillText("Player 2 Score: " + snake2.score, canvasSize - 150, 20); // HUMAN POST-EDIT
+
+    }
   }
 
   function cpuAI() {
@@ -116,7 +119,9 @@ function drawScore() {
 
   function updateGame() {
     snake1.update();
-    snake2.update();
+    if(gameState != "singlePlayer"){
+        snake2.update(); // HUMAN POST-EDIT
+    }
     if (gameState === "vsCPU") {
       cpuAI();
     }
@@ -134,11 +139,6 @@ function drawScore() {
       food = new Food();
     }
   
-    if (snake1.score >= 250 || snake2.score >= 250) {
-      gameOver = true;
-      return;
-    }
-  
     for (let i = 1; i < snake1.body.length; i++) {
       if (snake1.body[0].x === snake1.body[i].x && snake1.body[0].y === snake1.body[i].y) {
         gameOver = true;
@@ -151,26 +151,29 @@ function drawScore() {
         return;
       }
     }
-    
-    // Check for collision between snakes
+    if(gameState != "singlePlayer"){
+        // Check for collision between snakes
     if (snake1.body[0].x === snake2.body[0].x && snake1.body[0].y === snake2.body[0].y) {
-      gameOver = true;
-      if (snake1.score > snake2.score) {
-        winner = "Player 1";
-      } else if (snake1.score < snake2.score) {
-        winner = "Player 2";
-      } else {
-        winner = "No one"; // It's a tie
+        gameOver = true;
+        if (snake1.score > snake2.score) {
+          winner = "Player 1";
+        } else if (snake1.score < snake2.score) {
+          winner = "Player 2";
+        } else {
+          winner = "No one"; // It's a tie
+        }
+      }
+      // Spawn power-up randomly
+    if (!powerUp.active && Math.random() < 0.005) {
+        powerUp.active = true;
+        powerUpTimeout = setTimeout(() => {
+          powerUp.active = false;
+        }, 5000);
       }
     }
     
-    // Spawn power-up randomly
-    if (!powerUp.active && Math.random() < 0.005) {
-      powerUp.active = true;
-      powerUpTimeout = setTimeout(() => {
-        powerUp.active = false;
-      }, 5000);
-    }
+    
+    
   
     // Check if any snake picks up the power-up
     if (powerUp.active && (snake1.body[0].x === powerUp.x && snake1.body[0].y === powerUp.y)) {
@@ -188,25 +191,28 @@ function drawScore() {
         snake1.speed *= 0.75;
       }, 5000);
     }
-    
   }
 function spawnPowerUp() {
-    if (!powerUp.active) {
-      powerUp.active = true;
-      powerUpTimeout = setTimeout(() => {
-        powerUp.active = false;
-      }, 5000);
+    if(gameState != "singlePlayer"){
+        if (!powerUp.active) {
+            powerUp.active = true;
+            powerUpTimeout = setTimeout(() => {
+              powerUp.active = false;
+            }, 5000);
+          }
     }
+    
     setTimeout(spawnPowerUp, Math.random() * 10000 + 5000); // Spawn power-up every 5-15 seconds
   }
-function drawTitleScreen() {
+  function drawTitleScreen() {
     ctx.fillStyle = "white";
     ctx.font = "30px Arial";
     ctx.fillText("Snake Game", 95, 120);
     ctx.font = "20px Arial";
     ctx.fillText("1. Multiplayer", 110, 160);
     ctx.fillText("2. VS CPU", 110, 190);
-    ctx.fillText("Press 1 or 2 to start", 80, 240);
+    ctx.fillText("3. Single Player", 110, 220); // added line
+    ctx.fillText("Press or tap 1, 2 or 3 to start", 60, 260); // updated line
   }
 function drawGame() {
     ctx.clearRect(0, 0, canvasSize, canvasSize);
@@ -215,9 +221,12 @@ function drawGame() {
       drawTitleScreen();
     } else {
       snake1.draw();
-      snake2.draw();
+      if(gameState != "singlePlayer"){ // HUMAN POST-EDIT
+            snake2.draw();
+            powerUp.draw();
+
+        }
       food.draw();
-      powerUp.draw();
 
       drawScore();
 
@@ -293,6 +302,7 @@ function drawWinner() {
     ctx.fillText("Game Over", 100, 160);
   
     let winner;
+    if(gameState != "singlePlayer"){
     if (snake1.score > snake2.score) {
       winner = "Player 1";
     } else if (snake1.score < snake2.score) {
@@ -300,8 +310,12 @@ function drawWinner() {
     } else {
       winner = "No one"; // It's a tie
     }
-    
     ctx.fillText(winner + " wins!", 110, 200);
+
+}
+
+
+    
     ctx.font = "20px Arial";
     ctx.fillText("Press ENTER or tap here", 75, 240);
   }
@@ -334,6 +348,12 @@ document.addEventListener("keydown", (e) => {
       gameState = "vsCPU";
       gameLoop();
     }
+    else if (e.key === "3") { // added condition
+        gameState = "singlePlayer";
+        gameLoop();
+      }
+  
+    
   }
   if (gameOver && e.key === "Enter") {
     initGame();
