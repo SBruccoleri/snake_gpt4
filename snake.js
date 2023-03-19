@@ -303,7 +303,7 @@ function drawWinner() {
     
     ctx.fillText(winner + " wins!", 110, 200);
     ctx.font = "20px Arial";
-    ctx.fillText("Press ENTER or tap here to restart", 75, 240);
+    ctx.fillText("Press ENTER or tap here", 75, 240);
   }
   function getTouchDirection(touchStart, touchEnd) {
     const diffX = touchEnd.x - touchStart.x;
