@@ -220,31 +220,29 @@ function drawGame() {
     }
   }
   let touchStart = { x: 0, y: 0 };
-  function getRelativeTouchCoords(e) {
+  function getCanvasRelativeTouchPosition(touch) {
     const rect = canvas.getBoundingClientRect();
     return {
-      x: e.changedTouches[0].clientX - rect.left,
-      y: e.changedTouches[0].clientY - rect.top,
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
     };
   }
   canvas.addEventListener("touchstart", (e) => {
     e.preventDefault();
-    const coords = getRelativeTouchCoords(e);
-    touchStart.x = coords.x;
-    touchStart.y = coords.y;
+    const touch = getCanvasRelativeTouchPosition(e.touches[0]);
+    touchStart.x = touch.x;
+    touchStart.y = touch.y;
   });
   
   canvas.addEventListener("touchend", (e) => {
     e.preventDefault();
-    const coords = getRelativeTouchCoords(e);
-    const touchEnd = { x: coords.x, y: coords.y };
+    const touchEnd = getCanvasRelativeTouchPosition(e.changedTouches[0]);
+  
     if (gameState === "title") {
       if (isTouchInArea(touchEnd, 110, 140, 100, 30)) {
         gameState = "multiplayer";
-        gameLoop();
       } else if (isTouchInArea(touchEnd, 110, 170, 100, 30)) {
         gameState = "vsCPU";
-        gameLoop();
       }
     } else {
       const direction = getTouchDirection(touchStart, touchEnd);
