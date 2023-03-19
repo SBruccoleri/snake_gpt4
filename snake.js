@@ -89,6 +89,7 @@ function initGame() {
     snake2 = new Snake(260, 20, "red");
     food = new Food();
     powerUp = new PowerUp();
+    spawnPowerUp();
     gameOver = false;
     gameState = "title";
     
@@ -113,70 +114,91 @@ function drawScore() {
   }
   let powerUpTimeout, effectTimeout;
 
-function updateGame() {
-  snake1.update();
-  snake2.update();
-  if (gameState === "vsCPU") {
-    cpuAI();
-  }
-
-  if (snake1.body[0].x === food.x && snake1.body[0].y === food.y) {
-    snake1.grow += 3;
-    snake1.score += 10;
-    snake1.speed *= 0.95;
-    food = new Food();
-  }
-  if (snake2.body[0].x === food.x && snake2.body[0].y === food.y) {
-    snake2.grow += 3;
-    snake2.score += 10;
-    snake2.speed *= 0.95;
-    food = new Food();
-  }
-
-  if (snake1.score >= 250 || snake2.score >= 250) {
-    gameOver = true;
-    return;
-  }
-
-  for (let i = 1; i < snake1.body.length; i++) {
-    if (snake1.body[0].x === snake1.body[i].x && snake1.body[0].y === snake1.body[i].y) {
-      gameOver = true;
-      return;
+  function updateGame() {
+    snake1.update();
+    snake2.update();
+    if (gameState === "vsCPU") {
+      cpuAI();
     }
-  }
-  for (let i = 1; i < snake2.body.length; i++) {
-    if (snake2.body[0].x === snake2.body[i].x && snake2.body[0].y === snake2.body[i].y) {
-      gameOver = true;
-      return;
-    }
-  }
   
-// Spawn power-up randomly
-if (!powerUp.active && Math.random() < 0.005) {
-    powerUp.active = true;
-    powerUpTimeout = setTimeout(() => {
+    if (snake1.body[0].x === food.x && snake1.body[0].y === food.y) {
+      snake1.grow += 3;
+      snake1.score += 10;
+      snake1.speed *= 0.95;
+      food = new Food();
+    }
+    if (snake2.body[0].x === food.x && snake2.body[0].y === food.y) {
+      snake2.grow += 3;
+      snake2.score += 10;
+      snake2.speed *= 0.95;
+      food = new Food();
+    }
+  
+    if (snake1.score >= 250 || snake2.score >= 250) {
+      gameOver = true;
+      return;
+    }
+  
+    for (let i = 1; i < snake1.body.length; i++) {
+      if (snake1.body[0].x === snake1.body[i].x && snake1.body[0].y === snake1.body[i].y) {
+        gameOver = true;
+        return;
+      }
+    }
+    for (let i = 1; i < snake2.body.length; i++) {
+      if (snake2.body[0].x === snake2.body[i].x && snake2.body[0].y === snake2.body[i].y) {
+        gameOver = true;
+        return;
+      }
+    }
+    
+    // Check for collision between snakes
+    if (snake1.body[0].x === snake2.body[0].x && snake1.body[0].y === snake2.body[0].y) {
+      gameOver = true;
+      if (snake1.score > snake2.score) {
+        winner = "Player 1";
+      } else if (snake1.score < snake2.score) {
+        winner = "Player 2";
+      } else {
+        winner = "No one"; // It's a tie
+      }
+    }
+    
+    // Spawn power-up randomly
+    if (!powerUp.active && Math.random() < 0.005) {
+      powerUp.active = true;
+      powerUpTimeout = setTimeout(() => {
+        powerUp.active = false;
+      }, 5000);
+    }
+  
+    // Check if any snake picks up the power-up
+    if (powerUp.active && (snake1.body[0].x === powerUp.x && snake1.body[0].y === powerUp.y)) {
       powerUp.active = false;
-    }, 9000);
+      snake2.speed /= 0.75;
+      clearTimeout(effectTimeout);
+      effectTimeout = setTimeout(() => {
+        snake2.speed *= 0.75;
+      }, 5000);
+    } else if (powerUp.active && (snake2.body[0].x === powerUp.x && snake2.body[0].y === powerUp.y)) {
+      powerUp.active = false;
+      snake1.speed /= 0.75;
+      clearTimeout(effectTimeout);
+      effectTimeout = setTimeout(() => {
+        snake1.speed *= 0.75;
+      }, 5000);
+    }
+    
   }
-
-  // Check if any snake picks up the power-up
-  if (powerUp.active && (snake1.body[0].x === powerUp.x && snake1.body[0].y === powerUp.y)) {
-    powerUp.active = false;
-    snake2.speed /= 0.75;
-    clearTimeout(effectTimeout);
-    effectTimeout = setTimeout(() => {
-      snake2.speed *= 0.75;
-    }, 0000);
-  } else if (powerUp.active && (snake2.body[0].x === powerUp.x && snake2.body[0].y === powerUp.y)) {
-    powerUp.active = false;
-    snake1.speed /= 0.75;
-    clearTimeout(effectTimeout);
-    effectTimeout = setTimeout(() => {
-      snake1.speed *= 0.75;
-    }, 9000);
+function spawnPowerUp() {
+    if (!powerUp.active) {
+      powerUp.active = true;
+      powerUpTimeout = setTimeout(() => {
+        powerUp.active = false;
+      }, 5000);
+    }
+    setTimeout(spawnPowerUp, Math.random() * 10000 + 5000); // Spawn power-up every 5-15 seconds
   }
-  
-}
 function drawTitleScreen() {
     ctx.fillStyle = "white";
     ctx.font = "30px Arial";
@@ -233,6 +255,8 @@ function drawGame() {
     touchStart.x = touch.x;
     touchStart.y = touch.y;
   });
+
+  
   
   canvas.addEventListener("touchend", (e) => {
     e.preventDefault();
@@ -251,6 +275,10 @@ function drawGame() {
       if (direction === "left" && snake1.vx === 0) snake1.changeDirection(-scale, 0);
       if (direction === "right" && snake1.vx === 0) snake1.changeDirection(scale, 0);
     }
+    if (gameOver && touchEnd) {
+        initGame();
+        gameLoop();
+      }
   });
 function gameLoop() {
   if (!gameOver) {
@@ -275,7 +303,7 @@ function drawWinner() {
     
     ctx.fillText(winner + " wins!", 110, 200);
     ctx.font = "20px Arial";
-    ctx.fillText("Press ENTER to restart", 75, 240);
+    ctx.fillText("Press ENTER or tap here to restart", 75, 240);
   }
   function getTouchDirection(touchStart, touchEnd) {
     const diffX = touchEnd.x - touchStart.x;
